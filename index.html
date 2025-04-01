@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acuario Tus Mascotas - Sistema de Puntos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+    <img src="logo.jpg" alt="Logo Acuario" class="logo-flotante" id="logoHeader">
+
+    <div class="main-content">
+        <h1>🐠 Acuario Tus Mascotas - Sistema de Puntos</h1>
+        
+        <div class="form-section">
+            <div class="section-header" onclick="toggleSection('nuevoCliente')">
+                <h2>➕ Registrar Nuevo Cliente</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="nuevoCliente">
+                <div class="form-group">
+                    <label for="name">Nombre:</label>
+                    <input type="text" id="name" placeholder="Ej: Julian Alvarez">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Teléfono:</label>
+                    <input type="text" id="phone" placeholder="Ej: 3519121831">
+                </div>
+                <div class="form-group">
+                    <label for="purchase">Monto de compra ($):</label>
+                    <input type="number" id="purchase" placeholder="Ej: 10000">
+                </div>
+                <button onclick="guardarCliente()">Guardar Cliente</button>
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <div class="section-header" onclick="toggleSection('buscarClienteSection')">
+                <h2>🔍 Buscar Cliente</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="buscarClienteSection">
+                
+                <div class="form-group">
+                    <label for="searchName">Nombre:</label>
+                    <input type="text" id="searchName" placeholder="Ej: Julian Alvarez">
+                    <button onclick="filtrarPorNombre()" style="background-color: #2196F3;">Buscar</button>
+                </div>
+                <div class="form-group">
+                    <label for="searchPhone">Teléfono:</label>
+                    <input type="text" id="searchPhone" placeholder="Ej: 3519121831">
+                    <button onclick="filtrarPorTelefono()" style="background-color: #2196F3;">Buscar</button>
+                </div>
+                <button onclick="limpiarFiltros()" style="background-color: #9CA3AF; margin-top: 10px;">Limpiar filtros</button>
+                <h2></h2>
+                <div class="form-group">
+                    <label for="searchId">ID del Cliente:</label>
+                    <input type="number" id="searchId" placeholder="Ingrese el ID">
+                    <button onclick="buscarCliente()">Buscar</button>
+                </div>
+
+            </div>
+
+        </div>
+        
+        <div class="add-purchase" id="addPurchaseSection" style="display:none;">
+            <div class="section-header" onclick="toggleSection('agregarCompraSection')">
+                <h2>💳 Agregar Compra</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content" id="agregarCompraSection">
+                <div class="form-group">
+                    <label>ID Cliente: <span id="currentId" style="font-weight:bold;"></span></label>
+                    <label for="additionalPurchase">Monto adicional ($):</label>
+                    <input type="number" id="additionalPurchase" placeholder="Ej: 5000">
+                    <button onclick="agregarCompra()">Agregar Compra</button>
+                </div>
+            </div>
+        </div>
+        
+        <h2>📋 Lista de Clientes</h2>
+        <div id="filtroInfo" style="display: none; background: rgba(59, 130, 246, 0.2); padding: 8px 15px; border-radius: 8px; margin-bottom: 10px;"></div>
+        <button id="exportExcelBtn" class="export-btn" style="background: linear-gradient(135deg, #2e7d32 0%, #4CAF50 100%); margin-bottom: 15px;">
+            📊 Exportar a Excel
+        </button>
+        <table id="clientesTable">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Total Compras</th>
+                    <th>Puntos (20%)</th>
+                    <th style="width: 180px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="searchResults"></div>
+    </div>
+
+
+    <div class="sidebar">
+        <div class="scoreboard">
+            <h2>🐠 TOP 5 CLIENTES 🐠</h2>
+            <div id="topClients"></div>    
+        </div>
+
+        <button id="exportTopClients" class="export-btn">📸 Exportar como imagen</button>
+
+
+        <div class="award-card award-gold" onclick="mostrarClientesPorPuntos(60000, null, 'gold')">
+            <span class="trophy-icon">🥇</span>
+            <h3>100.000 PUNTOS</h3>
+            <p>30% DE DESCUENTO</p>
+            <div class="fish-icon">🐬</div>
+        </div>
+        <div class="award-card award-silver" onclick="mostrarClientesPorPuntos(30000, 60000, 'silver')">
+            <span class="trophy-icon">🥈</span>
+            <h3>60.000 PUNTOS</h3>
+            <p>12% DE DESCUENTO</p>
+            <div class="fish-icon">🐟</div>
+        </div>
+        <div class="award-card award-bronze" onclick="mostrarClientesPorPuntos(0, 30000, 'bronze')">
+            <span class="trophy-icon">🥉</span>
+            <h3>30.000 PUNTOS</h3>
+            <p>5% DE DESCUENTO</p>
+            <div class="fish-icon">🐠</div>
+        </div>
+
+        <button id="resetSystemBtn" class="reset-system-btn">
+            🗑️ Resetear Sistema (ID=1)
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <div id="modalFiltro" class="modal-filtro">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2 id="modalTitulo">🥇 TOP CLIENTES</h2>
+                <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+            </div>
+            <div class="modal-tabla-container">
+                <table id="modalTabla">
+                    <thead>
+                        <tr>
+                            <th style="border-radius: 8px 0 0 0;">ID</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Total Compras</th>
+                            <th style="border-radius: 0 8px 0 0;">Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
